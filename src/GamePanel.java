@@ -14,12 +14,13 @@ public class GamePanel extends JPanel implements Runnable{
     // final to makes it unchangeable
     // GAME_HEIGHT uses that formula as it is the ratio of an actual pong table
     static final Dimension SCREEN_SIZE = new Dimension(GAME_WIDTH, GAME_HEIGHT);
-    static final int BALL_DIAMETRE = 20;
+    static final int BALL_DIAMETER = 20;
     static final int PADDLE_WIDTH = 25;
     static final int PADDLE_HEIGHT = 100;
     Thread gameThread;
     Image image;
     Graphics graphics;
+    Random random;
     Paddle paddle1;
     Paddle paddle2;
     Ball ball;
@@ -38,26 +39,83 @@ public class GamePanel extends JPanel implements Runnable{
 
     }
     public void newBall() {
-
+        random = new Random();
+        ball = new Ball((GAME_WIDTH/2) - (BALL_DIAMETER/2), random.nextInt(GAME_HEIGHT - BALL_DIAMETER), BALL_DIAMETER, BALL_DIAMETER);
+        // above we are passing the x coordinates and y coordinates for the centre of the window
     }
     public  void newPaddles() {
         // 28:15 in the video
         paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
     }
     public void paint(Graphics g) {
-
+        // this method "paints" the graphics on the screen
+        image = createImage(getWidth(), getHeight());
+        graphics = image.getGraphics();
+        draw(graphics);
+        g.drawImage(image, 0, 0, this);
+        // 0,0 is the top left
     }
     public void draw(Graphics g) {
-
+        ball.draw(g);  // draws the ball
+        score.draw(g);  // draws the score
     }
     public void move() {
-
+        ball.move();  // helps in making the ball move smoother
     }
     public void checkCollision() {
+        // ball collision
+        if(ball.y <= 0){  // if ball y coordinates is 0 (top)
+            ball.setYDirection(-ball.yVelocity);  // go other direction
+        }
+        if(ball.y >= GAME_HEIGHT-BALL_DIAMETER) {  // if ball hits bottom
+            ball.setYDirection(-ball.yVelocity);  // go other direction
+        }
+
+        if(ball.intersects(paddle1)) {
+            ball.xVelocity = Math.abs(ball.xVelocity);
+            ball.xVelocity++;  // increases speed when hit
+
+            if(ball.yVelocity > 0)
+                ball.yVelocity++; // increase speed when hit
+            else
+                ball.yVelocity--;
+            ball.setXDirection(ball.xVelocity);
+            ball.setYDirection(ball.yVelocity);
+        }
+
+        // ball score
+        if(ball.x <= 0) {  // if ball reaches left side
+            score.player2++;  // add 1 to player 2's score
+            newPaddles();  // reset paddle location
+            newBall();  // reset ball location
+            System.out.println("Player 2: " + score.player2);  // debug
+        }
+        if(ball.x >= GAME_WIDTH - BALL_DIAMETER) {  // if ball reaches right side
+            score.player1++;  // add 1 to player 1's score
+            newPaddles();  // reset paddle location
+            newBall();  // reset ball location
+            System.out.println("Player 1: " + score.player1);  // debug
+        }
 
     }
     public void run() {
-
+        // game loop
+        // adapted from the Minecraft source code
+        long lastTime = System.nanoTime();
+        double amountOfTicks = 60;  // sets tick rate, currently 60 tps/fps
+        double ns = 1000000000 / amountOfTicks;
+        double delta = 0;
+        while(true) {
+            long now = System.nanoTime();
+            delta += (now - lastTime) / ns;
+            lastTime = now;
+            if (delta >= 1) {
+                move();
+                checkCollision();
+                repaint();
+                delta--;
+            }
+        }
     }
     public class AL extends  KeyAdapter{  // AL stands for Action Listener
         public void keyPressed(KeyEvent e) {

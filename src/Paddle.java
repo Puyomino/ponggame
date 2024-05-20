@@ -10,7 +10,7 @@ public class Paddle extends Rectangle {
     int id;  // id to identify if player 1 or player 2
     int yVelocity;  // how fast paddle will move up and down
 
-    Paddle(){
+    Paddle(int x, int y, int PADDLE_WIDTH, int PADDLE_HEIGHT, int id){
 
     }
     public void KeyPressed(KeyEvent e) {
