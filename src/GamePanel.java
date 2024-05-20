@@ -44,8 +44,9 @@ public class GamePanel extends JPanel implements Runnable{
         // above we are passing the x coordinates and y coordinates for the centre of the window
     }
     public  void newPaddles() {
-        // 28:15 in the video
+        // Sets the positioning of both paddles
         paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
+        paddle2 = new Paddle(GAME_WIDTH-PADDLE_HEIGHT,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
     }
     public void paint(Graphics g) {
         // this method "paints" the graphics on the screen
@@ -58,9 +59,14 @@ public class GamePanel extends JPanel implements Runnable{
     public void draw(Graphics g) {
         ball.draw(g);  // draws the ball
         score.draw(g);  // draws the score
+        // draws the paddles
+        paddle1.draw(g);
+        paddle2.draw(g);
     }
     public void move() {
         ball.move();  // helps in making the ball move smoother
+        paddle1.move(); // makes the paddle movement smoother
+        paddle2.move();
     }
     public void checkCollision() {
         // ball collision
@@ -71,7 +77,7 @@ public class GamePanel extends JPanel implements Runnable{
             ball.setYDirection(-ball.yVelocity);  // go other direction
         }
 
-        if(ball.intersects(paddle1)) {
+        if(ball.intersects(paddle1)) { // checks if the ball has hit the paddle
             ball.xVelocity = Math.abs(ball.xVelocity);
             ball.xVelocity++;  // increases speed when hit
 
@@ -79,9 +85,30 @@ public class GamePanel extends JPanel implements Runnable{
                 ball.yVelocity++; // increase speed when hit
             else
                 ball.yVelocity--;
-            ball.setXDirection(ball.xVelocity);
+            ball.setXDirection(ball.xVelocity); // Bounces the ball off the paddle
             ball.setYDirection(ball.yVelocity);
         }
+        if(ball.intersects(paddle2)) { // checks if the ball has hit the paddle
+            ball.xVelocity = Math.abs(ball.xVelocity);
+            ball.xVelocity++;  // increases speed when hit
+
+            if(ball.yVelocity > 0)
+                ball.yVelocity++; // increase speed when hit
+            else
+                ball.yVelocity--;
+            ball.setXDirection(-ball.xVelocity); // Bounces the ball off the paddle
+            ball.setYDirection(ball.yVelocity);
+        }
+
+        // stops the paddles at the window edges
+        if(paddle1.y<=0)
+            paddle1.y=0;
+        if(paddle1.y>=(GAME_HEIGHT-PADDLE_HEIGHT))
+            paddle1.y=GAME_HEIGHT-PADDLE_HEIGHT;
+        if(paddle2.y<=0)
+            paddle2.y=0;
+        if(paddle2.y>=(GAME_HEIGHT-PADDLE_HEIGHT))
+            paddle2.y=GAME_HEIGHT-PADDLE_HEIGHT;
 
         // ball score
         if(ball.x <= 0) {  // if ball reaches left side
@@ -117,12 +144,14 @@ public class GamePanel extends JPanel implements Runnable{
             }
         }
     }
-    public class AL extends  KeyAdapter{  // AL stands for Action Listener
+    public class AL extends KeyAdapter{  // AL stands for Action Listener
         public void keyPressed(KeyEvent e) {
-
+            paddle1.keyPressed(e);
+            paddle2.keyPressed(e);
         }
         public void keyReleased(KeyEvent e) {
-
+            paddle1.keyReleased(e);
+            paddle2.keyReleased(e);
         }
     }
 }
