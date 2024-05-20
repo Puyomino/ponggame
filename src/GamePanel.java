@@ -46,7 +46,7 @@ public class GamePanel extends JPanel implements Runnable{
     public  void newPaddles() {
         // Sets the positioning of both paddles
         paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
-        paddle2 = new Paddle(GAME_WIDTH-PADDLE_HEIGHT,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
+        paddle2 = new Paddle(GAME_WIDTH-PADDLE_WIDTH,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
     }
     public void paint(Graphics g) {
         // this method "paints" the graphics on the screen
@@ -115,13 +115,11 @@ public class GamePanel extends JPanel implements Runnable{
             score.player2++;  // add 1 to player 2's score
             newPaddles();  // reset paddle location
             newBall();  // reset ball location
-            System.out.println("Player 2: " + score.player2);  // debug
         }
         if(ball.x >= GAME_WIDTH - BALL_DIAMETER) {  // if ball reaches right side
             score.player1++;  // add 1 to player 1's score
             newPaddles();  // reset paddle location
             newBall();  // reset ball location
-            System.out.println("Player 1: " + score.player1);  // debug
         }
 
     }
