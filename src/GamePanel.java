@@ -44,7 +44,12 @@ public class GamePanel extends JPanel implements Runnable{
 
     }
     public void paint(Graphics g) {
-
+        // this method "paints" the graphics on the screen
+        image = createImage(getWidth(), getHeight());
+        graphics = image.getGraphics();
+        draw(graphics);
+        g.drawImage(image, 0, 0, this);
+        // 0,0 is the top left
     }
     public void draw(Graphics g) {
 
@@ -56,7 +61,23 @@ public class GamePanel extends JPanel implements Runnable{
 
     }
     public void run() {
-
+        // game loop
+        // adapted from the Minecraft source code
+        long lastTime = System.nanoTime();
+        double amountOfTicks = 60;
+        double ns = 1000000000 / amountOfTicks;
+        double delta = 0;
+        while(true) {
+            long now = System.nanoTime();
+            delta += (now - lastTime) / ns;
+            lastTime = now;
+            if (delta >= 1) {
+                move();
+                checkCollision();
+                repaint();
+                delta--;
+            }
+        }
     }
     public class AL extends  KeyAdapter{  // AL stands for Action Listener
         public void keyPressed(KeyEvent e) {
