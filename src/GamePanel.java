@@ -40,7 +40,7 @@ public class GamePanel extends JPanel implements Runnable{
     }
     public void newBall() {
         random = new Random();
-        ball = new Ball((GAME_WIDTH/2) - (BALL_DIAMETER/2), (GAME_HEIGHT/2) - (BALL_DIAMETER/2), BALL_DIAMETER, BALL_DIAMETER);
+        ball = new Ball((GAME_WIDTH/2) - (BALL_DIAMETER/2), random.nextInt(GAME_HEIGHT - BALL_DIAMETER), BALL_DIAMETER, BALL_DIAMETER);
         // above we are passing the x coordinates and y coordinates for the centre of the window
     }
     public  void newPaddles() {
@@ -56,6 +56,7 @@ public class GamePanel extends JPanel implements Runnable{
     }
     public void draw(Graphics g) {
         ball.draw(g);  // draws the ball
+        score.draw(g);  // draws the score
     }
     public void move() {
         ball.move();  // helps in making the ball move smoother
@@ -79,6 +80,20 @@ public class GamePanel extends JPanel implements Runnable{
                 ball.yVelocity--;
             ball.setXDirection(ball.xVelocity);
             ball.setYDirection(ball.yVelocity);
+        }
+
+        // ball score
+        if(ball.x <= 0) {  // if ball reaches left side
+            score.player2++;  // add 1 to player 2's score
+            newPaddles();  // reset paddle location
+            newBall();  // reset ball location
+            System.out.println("Player 2: " + score.player2);  // debug
+        }
+        if(ball.x >= GAME_WIDTH - BALL_DIAMETER) {  // if ball reaches right side
+            score.player1++;  // add 1 to player 1's score
+            newPaddles();  // reset paddle location
+            newBall();  // reset ball location
+            System.out.println("Player 1: " + score.player1);  // debug
         }
 
     }
